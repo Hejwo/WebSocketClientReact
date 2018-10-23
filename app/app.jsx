@@ -11,7 +11,7 @@ class App extends Component {
 
   componentDidMount(){
     // this.props.connectToChatServer(`ws://${location.host}/websocket/chat`);
-		this.props.connectToChatServer(`ws://localhost:8888/client-chat`);
+		this.props.connectToChatServer(`ws://localhost:8888/mobile-chat`);
   }
 
   render(){

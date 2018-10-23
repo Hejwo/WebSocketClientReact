@@ -5,6 +5,8 @@ export const USER_JOINED = 'USER_JOINED';
 export const USER_STATS = 'USER_STATS';
 export const USER_LEFT = 'USER_LEFT';
 
+let uid = 0
+
 const eventToActionAdapters = {
   CHAT_MESSAGE: ({id, timestamp, payload:{user, message}}) =>
   ({ type:MESSAGE_RECEIVED, payload:{ id, timestamp, user, message }}),
@@ -12,11 +14,14 @@ const eventToActionAdapters = {
   USER_LEFT: ({payload}) => ({type: USER_LEFT, payload})
 };
 
+const parseMsg = ({clerkName, message}) => ({
+  type: MESSAGE_RECEIVED,
+  payload:{ id: uid++, timestamp: Date.now(), user: clerkName, message }
+})
+
 export function messageToActionAdapter(msg){
   const event = JSON.parse(msg.data);
-  if(eventToActionAdapters[event.type]){
-    return eventToActionAdapters[event.type](event);
-  }
+  return parseMsg(event)
 }
 
 export function connectToChatServer(url) {
@@ -28,7 +33,12 @@ export function connectToChatServer(url) {
 function overTheSocket(type, payload) {
   return {
     type: WEBSOCKET_SEND,
-    payload: { type, payload }
+    payload: {
+      "registrationRequestUuid": "b9ed0585-144a-4076-8ab6-6bbe5cea5798",
+      "carAlias": "myCar1",
+      "message": payload.message,
+      "userName": "Jan Kowalski"
+    }
   };
 }
 
@@ -47,5 +57,8 @@ export function sendMessage(user, message) {
 }
 
 export function joinChat(user) {
-  return doubleDispatch(USER_JOINED, {user});
+  return {
+    type: USER_JOINED,
+    payload: {user}
+  };
 }
